@@ -8,8 +8,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func FindAllChasiers(c echo.Context) error {
-	result, err := models.FindChasiersAll()
+func FindAllCashiers(c echo.Context) error {
+	limit := c.Param("limit")
+	skip := c.Param("skip")
+
+	conv_limit, err := strconv.Atoi(limit)
+	conv_skip, err := strconv.Atoi(skip)
+
+	result, err := models.FindCashiersAll(conv_limit, conv_skip)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -18,11 +24,11 @@ func FindAllChasiers(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func StoreChasiers(c echo.Context) error {
+func StoreCashiers(c echo.Context) error {
 	name := c.FormValue("name")
 	passcode := c.FormValue("passcode")
 
-	result, err := models.StoreChasiers(name, passcode)
+	result, err := models.StoreCashiers(name, passcode)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -31,7 +37,7 @@ func StoreChasiers(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func UpdateChasiers(c echo.Context) error {
+func UpdateCashiers(c echo.Context) error {
 	id := c.Param("id")
 	name := c.FormValue("name")
 	passcode := c.FormValue("passcode")
@@ -41,7 +47,7 @@ func UpdateChasiers(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.UpdateChasiers(conv_id, name, passcode)
+	result, err := models.UpdateCashiers(conv_id, name, passcode)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -49,7 +55,7 @@ func UpdateChasiers(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func DeleteChasiers(c echo.Context) error {
+func DeleteCashiers(c echo.Context) error {
 	id := c.Param("id")
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
@@ -57,7 +63,7 @@ func DeleteChasiers(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.DeleteChasiers(conv_id)
+	result, err := models.DeleteCashiers(conv_id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

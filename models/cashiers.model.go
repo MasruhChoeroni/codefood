@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Chasiers struct {
+type Cashiers struct {
 	Id        int       `json:"cashierId"`
 	Name      string    `json:"name"`
 	Passcode  string    `json:"passcode"`
@@ -13,16 +13,16 @@ type Chasiers struct {
 	UpdatedAt time.Time `json:"createdAt"`
 }
 
-func FindChasiersAll() (Response, error) {
-	var obj Chasiers
-	var arrobj []Chasiers
+func FindCashiersAll(limit int, skip int) (Response, error) {
+	var obj Cashiers
+	var arrobj []Cashiers
 	var res Response
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT * FROM chasiers"
+	sqlStatement := "SELECT * FROM cashiers LIMIT ?, ?"
 
-	rows, err := con.Query(sqlStatement)
+	rows, err := con.Query(sqlStatement, limit, skip)
 
 	defer rows.Close()
 
@@ -45,13 +45,13 @@ func FindChasiersAll() (Response, error) {
 	return res, nil
 }
 
-func StoreChasiers(name string, passcode string) (Response, error) {
+func StoreCashiers(name string, passcode string) (Response, error) {
 	var res Response
-	var obj Chasiers
+	var obj Cashiers
 
 	con := db.CreateCon()
 
-	sqlStatement := "INSERT chasiers (name, passcode, created_at, updated_at) VALUES (?, ?, now(), now());"
+	sqlStatement := "INSERT cashiers (name, passcode, created_at, updated_at) VALUES (?, ?, now(), now());"
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
@@ -68,7 +68,7 @@ func StoreChasiers(name string, passcode string) (Response, error) {
 		return res, err
 	}
 
-	sqlStatement2 := "SELECT * FROM chasiers WHERE id = ?;"
+	sqlStatement2 := "SELECT * FROM cashiers WHERE id = ?;"
 	rows, err := con.Query(sqlStatement2, lastInsertedId)
 
 	defer rows.Close()
@@ -91,12 +91,12 @@ func StoreChasiers(name string, passcode string) (Response, error) {
 	return res, nil
 }
 
-func UpdateChasiers(id int, name string, passcode string) (Response, error) {
+func UpdateCashiers(id int, name string, passcode string) (Response, error) {
 	var res Response
 
 	con := db.CreateCon()
 
-	sqlStatement := "UPDATE chasiers SET name= ?, passcode = ?, updated_at = now() WHERE id = ?;"
+	sqlStatement := "UPDATE cashiers SET name= ?, passcode = ?, updated_at = now() WHERE id = ?;"
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
@@ -122,12 +122,12 @@ func UpdateChasiers(id int, name string, passcode string) (Response, error) {
 	return res, nil
 }
 
-func DeleteChasiers(id int) (Response, error) {
+func DeleteCashiers(id int) (Response, error) {
 	var res Response
 
 	con := db.CreateCon()
 
-	sqlStatement := "DELETE FROM chasiers WHERE id = ?;"
+	sqlStatement := "DELETE FROM cashiers WHERE id = ?;"
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {

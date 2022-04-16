@@ -13,9 +13,9 @@ func Init() *echo.Echo {
 		return c.String(http.StatusOK, "Back-end: Point of Sales API")
 	})
 
-	e.GET("/cashiers", controllers.FindAllChasiers)
-	e.POST("/cashiers", controllers.StoreChasiers)
-	e.PUT("/cashiers/:id", controllers.UpdateChasiers)
-	e.DELETE("/cashiers/:id", controllers.DeleteChasiers)
+	e.GET("/cashiers", controllers.FindAllCashiers)
+	e.POST("/cashiers", controllers.StoreCashiers)
+	e.PUT("/cashiers/:id", controllers.UpdateCashiers)
+	e.DELETE("/cashiers/:id", controllers.DeleteCashiers)
 	return e
 }
