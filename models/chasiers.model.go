@@ -68,7 +68,6 @@ func StoreChasiers(name string, passcode string) (Response, error) {
 		return res, err
 	}
 
-	// coba
 	sqlStatement2 := "SELECT * FROM chasiers WHERE id = ?;"
 	rows, err := con.Query(sqlStatement2, lastInsertedId)
 

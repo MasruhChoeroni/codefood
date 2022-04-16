@@ -15,7 +15,7 @@ func Init() *echo.Echo {
 
 	e.GET("/cashiers", controllers.FindAllChasiers)
 	e.POST("/cashiers", controllers.StoreChasiers)
-	e.PUT("/cashiers", controllers.UpdateChasiers)
-	e.DELETE("/cashiers", controllers.DeleteChasiers)
+	e.PUT("/cashiers/:id", controllers.UpdateChasiers)
+	e.DELETE("/cashiers/:id", controllers.DeleteChasiers)
 	return e
 }

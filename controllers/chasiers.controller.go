@@ -32,7 +32,7 @@ func StoreChasiers(c echo.Context) error {
 }
 
 func UpdateChasiers(c echo.Context) error {
-	id := c.FormValue("id")
+	id := c.Param("id")
 	name := c.FormValue("name")
 	passcode := c.FormValue("passcode")
 
@@ -50,7 +50,7 @@ func UpdateChasiers(c echo.Context) error {
 }
 
 func DeleteChasiers(c echo.Context) error {
-	id := c.FormValue("id")
+	id := c.Param("id")
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
 	if err != nil {
