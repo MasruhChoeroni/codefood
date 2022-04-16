@@ -1,8 +1,8 @@
 package main
 
 import (
-	"apps/db"
-	"apps/routes"
+	"codefood/db"
+	"codefood/routes"
 )
 
 func main() {
