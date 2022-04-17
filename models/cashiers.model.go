@@ -98,6 +98,36 @@ func FindCashiersById(id int) (Response, error) {
 	return res, nil
 }
 
+func FindCashiersPasscodeById(id int) (Response, error) {
+	var res Response
+	var passcode string
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT passcode FROM cashiers WHERE id = ?"
+
+	rows, err := con.Query(sqlStatement, id)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&passcode)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	res.Success = true
+	res.Message = "Success"
+	res.Data = map[string]string{
+		"passcode": passcode,
+	}
+
+	return res, nil
+}
+
 func StoreCashiers(name string, passcode string) (Response, error) {
 	var res Response
 	var obj Cashiers
