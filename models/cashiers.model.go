@@ -13,25 +13,43 @@ type Cashiers struct {
 	UpdatedAt time.Time `json:"createdAt"`
 }
 
+type Cashiers2 struct {
+	Id   int    `json:"cashierId"`
+	Name string `json:"name"`
+}
+
 func FindCashiersAll(limit int, skip int) (Response, error) {
-	var obj Cashiers
-	var arrobj []Cashiers
+	var obj Cashiers2
+	var arrobj []Cashiers2
 	var res Response
+	var total int64
 
 	con := db.CreateCon()
 
-	sqlStatement := "SELECT * FROM cashiers LIMIT ?, ?"
+	sqlCountStatement := "SELECT COUNT(*) AS total FROM cashiers"
 
-	rows, err := con.Query(sqlStatement, limit, skip)
-
-	defer rows.Close()
-
+	row, err := con.Query(sqlCountStatement)
 	if err != nil {
 		return res, err
 	}
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&total)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	sqlStatement := "SELECT id, name FROM cashiers LIMIT ? OFFSET ?"
+
+	rows, err := con.Query(sqlStatement, limit, skip)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&obj.Id, &obj.Name, &obj.Passcode, &obj.CreatedAt, &obj.UpdatedAt)
+		err = rows.Scan(&obj.Id, &obj.Name)
 		if err != nil {
 			return res, err
 		}
@@ -40,7 +58,14 @@ func FindCashiersAll(limit int, skip int) (Response, error) {
 
 	res.Success = true
 	res.Message = "Success"
-	res.Data = arrobj
+	res.Data = map[string]interface{}{
+		"cashiers": arrobj,
+		"meta": map[string]int64{
+			"total": total,
+			"limit": int64(limit),
+			"skip":  int64(skip),
+		},
+	}
 
 	return res, nil
 }

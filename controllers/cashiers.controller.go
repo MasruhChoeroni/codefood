@@ -9,8 +9,8 @@ import (
 )
 
 func FindAllCashiers(c echo.Context) error {
-	limit := c.Param("limit")
-	skip := c.Param("skip")
+	limit := c.QueryParam("limit")
+	skip := c.QueryParam("skip")
 
 	conv_limit, err := strconv.Atoi(limit)
 	conv_skip, err := strconv.Atoi(skip)
