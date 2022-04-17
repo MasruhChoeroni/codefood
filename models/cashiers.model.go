@@ -70,6 +70,34 @@ func FindCashiersAll(limit int, skip int) (Response, error) {
 	return res, nil
 }
 
+func FindCashiersById(id int) (Response, error) {
+	var obj Cashiers2
+	var res Response
+
+	con := db.CreateCon()
+
+	sqlStatement := "SELECT id, name FROM cashiers WHERE id = ?"
+
+	rows, err := con.Query(sqlStatement, id)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&obj.Id, &obj.Name)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	res.Success = true
+	res.Message = "Success"
+	res.Data = obj
+
+	return res, nil
+}
+
 func StoreCashiers(name string, passcode string) (Response, error) {
 	var res Response
 	var obj Cashiers
