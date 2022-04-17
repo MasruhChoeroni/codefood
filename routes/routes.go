@@ -20,5 +20,12 @@ func Init() *echo.Echo {
 	e.DELETE("/cashiers/:id", controllers.DeleteCashiers)
 
 	e.GET("/cashiers/:id/passcode", controllers.FindCashiersPasscodeById)
+
+	e.GET("/categories", controllers.FindAllCategories)
+	e.GET("/categories/:id", controllers.FindCategoriesById)
+	e.POST("/categories", controllers.StoreCategories)
+	e.PUT("/categories/:id", controllers.UpdateCategories)
+	e.DELETE("/categories/:id", controllers.DeleteCategories)
+
 	return e
 }
