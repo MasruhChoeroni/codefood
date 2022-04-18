@@ -67,39 +67,37 @@ func FindCashiersPasscodeById(c echo.Context) error {
 }
 
 func StoreCashiers(c echo.Context) error {
-	type CashiersValidate struct {
-		Name     string `json:"name" validate:"required"`
-		Passcode string `json:"passcode" validate:"required,numeric,len=6"`
-	}
-
-	cashier := new(CashiersValidate)
+	validate := validator.New()
+	cashier := &models.CashiersPostValidation{}
 
 	err := c.Bind(cashier)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	err = validate.Struct(cashier)
+
 	if err != nil {
 		report, ok := err.(*echo.HTTPError)
 		if !ok {
 			report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
-		if err = c.Validate(cashier); err != nil {
-			return err
+		if castedObject, ok := err.(validator.ValidationErrors); ok {
+			for _, err := range castedObject {
+				switch err.Tag() {
+				case "required":
+					report.Message = fmt.Sprintf("%s is required",
+						err.Field())
+				case "len":
+					report.Message = fmt.Sprintf("%s value length must be %s",
+						err.Field(), err.Param())
+				case "numeric":
+					report.Message = fmt.Sprintf("%s value must be numeric",
+						err.Field())
+				}
+			}
 		}
-
-		// if castedObject, ok := err.(validator.ValidationErrors); ok {
-		// 	for _, err := range castedObject {
-		// 		switch err.Tag() {
-		// 		case "required":
-		// 			report.Message = fmt.Sprintf("%s is required",
-		// 				err.Field())
-		// 		case "len":
-		// 			report.Message = fmt.Sprintf("%s value length must be %s",
-		// 				err.Field(), err.Param())
-		// 		case "numeric":
-		// 			report.Message = fmt.Sprintf("%s value must be numeric",
-		// 				err.Field())
-		// 		}
-		// 	}
-		// }
 		return c.JSON(http.StatusInternalServerError, report)
 	}
 
