@@ -67,48 +67,57 @@ func FindCashiersPasscodeById(c echo.Context) error {
 }
 
 func StoreCashiers(c echo.Context) error {
-	name := c.FormValue("name")
-	passcode := c.FormValue("passcode")
-
-	validate = validator.New()
-
 	type CashiersValidate struct {
-		Name     string `validate:"required"`
-		Passcode string `validate:"required,numeric,len=6"`
+		Name     string `json:"name" validate:"required"`
+		Passcode string `json:"passcode" validate:"required,numeric,len=6"`
 	}
 
-	outer := &CashiersValidate{
-		Name:     name,
-		Passcode: passcode,
+	type (
+		CustomValidator struct {
+			validator *validator.Validate
+		}
+	)
+	
+	func (cv *CustomValidator) Validate(i interface{}) error {
+		if err := cv.validator.Struct(i); err != nil {
+			// Optionally, you could return the error to give each route more control over the status code
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return nil
 	}
 
-	err := validate.Struct(outer)
+	cashier := new(CashiersValidate)
 
+	err := c.Bind(cashier)
 	if err != nil {
 		report, ok := err.(*echo.HTTPError)
 		if !ok {
 			report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
-		if castedObject, ok := err.(validator.ValidationErrors); ok {
-			for _, err := range castedObject {
-				switch err.Tag() {
-				case "required":
-					report.Message = fmt.Sprintf("%s is required",
-						err.Field())
-				case "len":
-					report.Message = fmt.Sprintf("%s value length must be %s",
-						err.Field(), err.Param())
-				case "numeric":
-					report.Message = fmt.Sprintf("%s value must be numeric",
-						err.Field())
-				}
-			}
+		if err = c.Validate(cashier); err != nil {
+			return err
 		}
+
+		// if castedObject, ok := err.(validator.ValidationErrors); ok {
+		// 	for _, err := range castedObject {
+		// 		switch err.Tag() {
+		// 		case "required":
+		// 			report.Message = fmt.Sprintf("%s is required",
+		// 				err.Field())
+		// 		case "len":
+		// 			report.Message = fmt.Sprintf("%s value length must be %s",
+		// 				err.Field(), err.Param())
+		// 		case "numeric":
+		// 			report.Message = fmt.Sprintf("%s value must be numeric",
+		// 				err.Field())
+		// 		}
+		// 	}
+		// }
 		return c.JSON(http.StatusInternalServerError, report)
 	}
 
-	result, err := models.StoreCashiers(name, passcode)
+	result, err := models.StoreCashiers(cashier.Name, cashier.Passcode)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())

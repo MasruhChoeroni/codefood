@@ -13,6 +13,11 @@ type Cashiers struct {
 	UpdatedAt time.Time `json:"createdAt"`
 }
 
+type CashiersPostValidation struct {
+	Name     string `json:"name" validate:"required"`
+	Passcode string `json:"passcode" validate:"required,numeric,len=6"`
+}
+
 type Cashiers2 struct {
 	Id   int    `json:"cashierId"`
 	Name string `json:"name"`
