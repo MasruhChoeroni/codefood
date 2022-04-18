@@ -118,45 +118,19 @@ func StoreCashiers(c echo.Context) error {
 
 func UpdateCashiers(c echo.Context) error {
 	id := c.Param("id")
-	name := c.FormValue("name")
-	passcode := c.FormValue("passcode")
+	validate := validator.New()
+	cashier := &models.CashiersValidation{}
 
-	validate = validator.New()
-
-	type CashiersValidate struct {
-		Name     string `validate:"required"`
-		Passcode string `validate:"required,numeric,len=6"`
+	err := c.Bind(cashier)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	outer := &CashiersValidate{
-		Name:     name,
-		Passcode: passcode,
-	}
-
-	err := validate.Struct(outer)
+	err = validate.Struct(cashier)
 
 	if err != nil {
-		report, ok := err.(*echo.HTTPError)
-		if !ok {
-			report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
-
-		if castedObject, ok := err.(validator.ValidationErrors); ok {
-			for _, err := range castedObject {
-				switch err.Tag() {
-				case "required":
-					report.Message = fmt.Sprintf("%s is required",
-						err.Field())
-				case "len":
-					report.Message = fmt.Sprintf("%s value length must be %s",
-						err.Field(), err.Param())
-				case "numeric":
-					report.Message = fmt.Sprintf("%s value must be numeric",
-						err.Field())
-				}
-			}
-		}
-		return c.JSON(http.StatusInternalServerError, report)
+		test := models.ResponseValidateError(err)
+		return c.JSON(http.StatusInternalServerError, test)
 	}
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
@@ -164,7 +138,7 @@ func UpdateCashiers(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.UpdateCashiers(conv_id, name, passcode)
+	result, err := models.UpdateCashiers(conv_id, cashier.Name, cashier.Passcode)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
