@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -59,49 +60,22 @@ func FindPaymentTypesById(c echo.Context) error {
 }
 
 func StorePaymentTypes(c echo.Context) error {
-	name := c.FormValue("name")
-	tipe := c.FormValue("type")
-	logo := c.FormValue("logo")
+	validate := validator.New()
+	paymentTypes := &models.PaymentTypesValidation{}
 
-	// validate = validator.New()
+	err := c.Bind(paymentTypes)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
 
-	// type PaymentTypesValidate struct {
-	// 	Name string `validate:"required"`
-	// 	Type string `validate:"required"`
-	// }
+	err = validate.Struct(paymentTypes)
 
-	// outer := &PaymentTypesValidate{
-	// 	Name: name,
-	// 	Type: tipe,
-	// }
+	if err != nil {
+		test := models.ResponseValidateError(err)
+		return c.JSON(http.StatusInternalServerError, test)
+	}
 
-	// err := validate.Struct(outer)
-
-	// if err != nil {
-	// 	report, ok := err.(*echo.HTTPError)
-	// 	if !ok {
-	// 		report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	// 	}
-
-	// 	if castedObject, ok := err.(validator.ValidationErrors); ok {
-	// 		for _, err := range castedObject {
-	// 			switch err.Tag() {
-	// 			case "required":
-	// 				report.Message = fmt.Sprintf("%s is required",
-	// 					err.Field())
-	// 			case "len":
-	// 				report.Message = fmt.Sprintf("%s value length must be %s",
-	// 					err.Field(), err.Param())
-	// 			case "numeric":
-	// 				report.Message = fmt.Sprintf("%s value must be numeric",
-	// 					err.Field())
-	// 			}
-	// 		}
-	// 	}
-	// 	return c.JSON(http.StatusInternalServerError, report)
-	// }
-
-	result, err := models.StorePaymentTypes(name, tipe, logo)
+	result, err := models.StorePaymentTypes(paymentTypes.Name, paymentTypes.Type, paymentTypes.Logo)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -112,16 +86,26 @@ func StorePaymentTypes(c echo.Context) error {
 
 func UpdatePaymentTypes(c echo.Context) error {
 	id := c.Param("id")
-	name := c.FormValue("name")
-	tipe := c.FormValue("type")
-	logo := c.FormValue("logo")
+	validate := validator.New()
+	paymentTypes := &models.PaymentTypesValidation{}
+
+	err := c.Bind(paymentTypes)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	err = validate.Struct(paymentTypes)
+	if err != nil {
+		test := models.ResponseValidateError(err)
+		return c.JSON(http.StatusInternalServerError, test)
+	}
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.UpdatePaymentTypes(conv_id, name, tipe, logo)
+	result, err := models.UpdatePaymentTypes(conv_id, paymentTypes.Name, paymentTypes.Type, paymentTypes.Logo)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

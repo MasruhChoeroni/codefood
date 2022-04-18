@@ -14,6 +14,12 @@ type PaymentTypes struct {
 	UpdatedAt time.Time `json:"createdAt"`
 }
 
+type PaymentTypesValidation struct {
+	Name string `json:"name" validate:"required"`
+	Type string `json:"type" validate:"required"`
+	Logo string `json:"logo"`
+}
+
 type PaymentTypes2 struct {
 	Id   int    `json:"paymentId"`
 	Name string `json:"name"`
@@ -88,7 +94,7 @@ func FindPaymentTypesById(id int) (Response, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&obj.Id, &obj.Name)
+		err = rows.Scan(&obj.Id, &obj.Name, &obj.Type, &obj.Logo)
 		if err != nil {
 			return res, err
 		}

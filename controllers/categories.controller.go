@@ -9,8 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var validate *validator.Validate
-
 func FindAllCategories(c echo.Context) error {
 	limit := c.QueryParam("limit")
 	skip := c.QueryParam("skip")

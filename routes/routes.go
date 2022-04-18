@@ -4,8 +4,11 @@ import (
 	"codefood/controllers"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
+
+var validate *validator.Validate
 
 func Init() *echo.Echo {
 	e := echo.New()
