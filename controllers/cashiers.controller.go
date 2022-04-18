@@ -72,20 +72,6 @@ func StoreCashiers(c echo.Context) error {
 		Passcode string `json:"passcode" validate:"required,numeric,len=6"`
 	}
 
-	type (
-		CustomValidator struct {
-			validator *validator.Validate
-		}
-	)
-	
-	func (cv *CustomValidator) Validate(i interface{}) error {
-		if err := cv.validator.Struct(i); err != nil {
-			// Optionally, you could return the error to give each route more control over the status code
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-		return nil
-	}
-
 	cashier := new(CashiersValidate)
 
 	err := c.Bind(cashier)
