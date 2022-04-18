@@ -5,8 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
+
+var validate *validator.Validate
 
 func FindAllCategories(c echo.Context) error {
 	limit := c.QueryParam("limit")
@@ -47,9 +50,22 @@ func FindCategoriesById(c echo.Context) error {
 }
 
 func StoreCategories(c echo.Context) error {
-	name := c.FormValue("name")
+	validate := validator.New()
+	categories := &models.CategoriesValidation{}
 
-	result, err := models.StoreCategories(name)
+	err := c.Bind(categories)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	err = validate.Struct(categories)
+
+	if err != nil {
+		test := models.ResponseValidateError(err)
+		return c.JSON(http.StatusInternalServerError, test)
+	}
+
+	result, err := models.StoreCategories(categories.Name)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -60,14 +76,26 @@ func StoreCategories(c echo.Context) error {
 
 func UpdateCategories(c echo.Context) error {
 	id := c.Param("id")
-	name := c.FormValue("name")
+	validate := validator.New()
+	categories := &models.CategoriesValidation{}
+
+	err := c.Bind(categories)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	err = validate.Struct(categories)
+	if err != nil {
+		test := models.ResponseValidateError(err)
+		return c.JSON(http.StatusInternalServerError, test)
+	}
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.UpdateCategories(conv_id, name)
+	result, err := models.UpdateCategories(conv_id, categories.Name)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

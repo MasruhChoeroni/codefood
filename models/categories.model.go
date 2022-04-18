@@ -12,6 +12,10 @@ type Categories struct {
 	UpdatedAt time.Time `json:"createdAt"`
 }
 
+type CategoriesValidation struct {
+	Name string `json:"name" validate:"required"`
+}
+
 type Categories2 struct {
 	Id   int    `json:"categoryId"`
 	Name string `json:"name"`

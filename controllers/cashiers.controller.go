@@ -2,15 +2,12 @@ package controllers
 
 import (
 	"codefood/models"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
-
-var validate *validator.Validate
 
 func FindAllCashiers(c echo.Context) error {
 	limit := c.QueryParam("limit")
@@ -64,31 +61,6 @@ func FindCashiersPasscodeById(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, result)
-}
-
-func ResponseValidateError(a error) error {
-	report, ok := a.(*echo.HTTPError)
-	if !ok {
-		report = echo.NewHTTPError(http.StatusInternalServerError, a.Error())
-	}
-
-	if castedObject, ok := a.(validator.ValidationErrors); ok {
-		for _, err := range castedObject {
-			switch err.Tag() {
-			case "required":
-				report.Message = fmt.Sprintf("%s is required",
-					err.Field())
-			case "len":
-				report.Message = fmt.Sprintf("%s value length must be %s",
-					err.Field(), err.Param())
-			case "numeric":
-				report.Message = fmt.Sprintf("%s value must be numeric",
-					err.Field())
-			}
-		}
-	}
-
-	return report
 }
 
 func StoreCashiers(c echo.Context) error {
