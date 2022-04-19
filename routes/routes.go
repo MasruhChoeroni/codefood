@@ -2,6 +2,7 @@ package routes
 
 import (
 	"codefood/controllers"
+	"codefood/middleware"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -25,17 +26,17 @@ func Init() *echo.Echo {
 
 	e.GET("/cashiers/:id/passcode", controllers.FindCashiersPasscodeById)
 
-	e.GET("/categories", controllers.FindAllCategories)
-	e.GET("/categories/:id", controllers.FindCategoriesById)
-	e.POST("/categories", controllers.StoreCategories)
-	e.PUT("/categories/:id", controllers.UpdateCategories)
-	e.DELETE("/categories/:id", controllers.DeleteCategories)
+	e.GET("/categories", controllers.FindAllCategories, middleware.IsAuthenticated)
+	e.GET("/categories/:id", controllers.FindCategoriesById, middleware.IsAuthenticated)
+	e.POST("/categories", controllers.StoreCategories, middleware.IsAuthenticated)
+	e.PUT("/categories/:id", controllers.UpdateCategories, middleware.IsAuthenticated)
+	e.DELETE("/categories/:id", controllers.DeleteCategories, middleware.IsAuthenticated)
 
-	e.GET("/payments", controllers.FindAllPaymentTypes)
-	e.GET("/payments/:id", controllers.FindPaymentTypesById)
-	e.POST("/payments", controllers.StorePaymentTypes)
-	e.PUT("/payments/:id", controllers.UpdatePaymentTypes)
-	e.DELETE("/payments/:id", controllers.DeletePaymentTypes)
+	e.GET("/payments", controllers.FindAllPaymentTypes, middleware.IsAuthenticated)
+	e.GET("/payments/:id", controllers.FindPaymentTypesById, middleware.IsAuthenticated)
+	e.POST("/payments", controllers.StorePaymentTypes, middleware.IsAuthenticated)
+	e.PUT("/payments/:id", controllers.UpdatePaymentTypes, middleware.IsAuthenticated)
+	e.DELETE("/payments/:id", controllers.DeletePaymentTypes, middleware.IsAuthenticated)
 
 	return e
 }
