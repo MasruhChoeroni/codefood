@@ -18,6 +18,7 @@ func Init() *echo.Echo {
 
 	e.GET("/cashiers", controllers.FindAllCashiers)
 	e.GET("/cashiers/:id", controllers.FindCashiersById)
+	e.POST("/cashiers/:id/login", controllers.LoginCashiers)
 	e.POST("/cashiers", controllers.StoreCashiers)
 	e.PUT("/cashiers/:id", controllers.UpdateCashiers)
 	e.DELETE("/cashiers/:id", controllers.DeleteCashiers)

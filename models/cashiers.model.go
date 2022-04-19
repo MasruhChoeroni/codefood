@@ -2,7 +2,11 @@ package models
 
 import (
 	"codefood/db"
+	"database/sql"
+	"fmt"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type Cashiers struct {
@@ -241,27 +245,44 @@ func DeleteCashiers(id int) (Response, error) {
 	return res, nil
 }
 
-// func VerifyLogin(id int, passcode string) (Response, error) {
-// 	var res Response
-// 	var count int
+func VerifyLogin(id int, passcode string) (Response, error) {
+	var obj Cashiers
+	var res Response
 
-// 	con := db.CreateCon()
+	con := db.CreateCon()
 
-// 	sqlStatement := "SELECT id, name, passcode FROM cashier WHERE id= ?, passcode = ?"
+	sqlStatement := "SELECT id, name, passcode FROM cashiers WHERE id= ? AND passcode = ?"
 
-// 	rows, err := con.Query(sqlStatement, id, passcode)
-// 	if err != nil {
-// 		return res, err
-// 	}
-// 	defer rows.Close()
+	err := con.QueryRow(sqlStatement, id, passcode).Scan(&obj.Id, &obj.Name, &obj.Passcode)
 
-// 	// if rows. {
+	if err == sql.ErrNoRows {
+		fmt.Println("Cashier not found")
+		return res, err
+	}
 
-// 	// }
+	if err != nil {
+		fmt.Println("Sintax query error")
+		return res, err
+	}
 
-// 	res.Success = true
-// 	res.Message = "Success"
-// 	res.Data = obj
+	token := jwt.New(jwt.SigningMethodHS256)
 
-// 	return res, nil
-// }
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = id
+	claims["name"] = &obj.Name
+	claims["passcode"] = &obj.Passcode
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+	t, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return res, err
+	}
+
+	res.Success = true
+	res.Message = "Success"
+	res.Data = map[string]string{
+		"token": t,
+	}
+
+	return res, nil
+}
