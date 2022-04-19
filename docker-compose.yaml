@@ -1,0 +1,38 @@
+version: "3.4"
+services:
+  codefood-service:
+    build: .
+    image: codefood
+    ports:
+      - "3030:3030"
+    depends_on:
+      codefood-mariadb:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: codefood-mariadb
+      MYSQL_PORT: 3306
+      MYSQL_PASSWORD: my-secret-pw
+      MYSQL_DBNAME: codefood
+      MYSQL_USER: root
+      PORT: 3030
+      ENVIRONMENT: production
+    container_name: codefood-service
+  codefood-mariadb:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    command: --init-file /data/application/db.sql
+    volumes:
+        - ./db.sql:/data/application/db.sql
+    healthcheck:
+      test: "/usr/bin/mariadb --user=root --password=my-secret-pw --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+      MARIADB_USER: example-user
+      MARIADB_PASSWORD: my_cool_secret
+      MARIADB_ROOT_PASSWORD: my-secret-pw
+      PORT: 3306
+      ENVIRONMENT: production
+    container_name: codefood-mariadb
