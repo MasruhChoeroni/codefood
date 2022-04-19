@@ -1,7 +1,7 @@
 {
-    "DB_USERNAME" : "root",
-    "DB_PASSWORD" : "password",
-    "DB_PORT" : "3306",
-    "DB_HOST" : "127.0.0.1",
-    "DB_NAME" : "foodcode"
+    "db_username" : "root",
+    "db_password" : "my-secret-pw",
+    "db_port" : "3306",
+    "db_host" : "codefood-mariadb",
+    "db_name" : "codefood"
 }
