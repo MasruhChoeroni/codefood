@@ -1,6 +1,14 @@
 # Building the binary of the App
 FROM golang:1.17.2-alpine AS build
 
+ENV MYSQL_HOST=${MYSQL_HOST}
+
+ENV MYSQL_HOST=${MYSQL_HOST} 
+ENV MYSQL_PORT=${MYSQL_PORT} 
+ENV MYSQL_USER=${MYSQL_USER} 
+ENV MYSQL_PASSWORD=${MYSQL_PASSWORD} 
+ENV MYSQL_DBNAME=${MYSQL_DBNAME}
+							
 # `codefood` should be replaced with your project name
 WORKDIR /go/src/codefood
 
