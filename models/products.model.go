@@ -6,27 +6,37 @@ import (
 )
 
 type Products struct {
-	Id         int       `json:"paymentId"`
-	Name       string    `json:"name"`
-	CategoryId string    `json:"type"`
-	Sku        string    `json:"sku"`
-	Stock      int64     `json:"stock"`
-	Price      int64     `json:"price"`
-	Discount   int64     `json:"discount"`
-	Image      string    `json:"image"`
-	CreatedAt  time.Time `json:"updatedAt"`
-	UpdatedAt  time.Time `json:"createdAt"`
+	Id         int        `json:"paymentId"`
+	Name       string     `json:"name"`
+	CategoryId string     `json:"type"`
+	Sku        string     `json:"sku"`
+	Stock      int64      `json:"stock"`
+	Price      int64      `json:"price"`
+	DiscountId int64      `json:"discountId"`
+	Discount   []Discount `json:"discount"`
+	Image      string     `json:"image"`
+	CreatedAt  time.Time  `json:"updatedAt"`
+	UpdatedAt  time.Time  `json:"createdAt"`
 }
 
 type Products2 struct {
-	Id         int    `json:"paymentId"`
-	Name       string `json:"name"`
-	CategoryId string `json:"type"`
-	Sku        string `json:"sku"`
-	Stock      int64  `json:"stock"`
-	Price      int64  `json:"price"`
-	Discount   int64  `json:"discount"`
-	Image      string `json:"image"`
+	Id         int        `json:"paymentId"`
+	Name       string     `json:"name"`
+	CategoryId string     `json:"type"`
+	Sku        string     `json:"sku"`
+	Stock      int64      `json:"stock"`
+	Price      int64      `json:"price"`
+	DiscountId int64      `json:"discountId"`
+	Discount   []Discount `json:"discount"`
+	Image      string     `json:"image"`
+}
+
+type Discount struct {
+	Id        int    `json:"discountId"`
+	Qty       int8   `json:"qty"`
+	Type      string `json:"type"`
+	Result    int64  `json:"result"`
+	ExpiredAt int64  `json:"expiredAt"`
 }
 
 func FindProductsAll(limit int, skip int, categoryId int, searchName string) (Response, error) {
