@@ -239,5 +239,29 @@ func DeleteCashiers(id int) (Response, error) {
 	}
 
 	return res, nil
-
 }
+
+// func VerifyLogin(id int, passcode string) (Response, error) {
+// 	var res Response
+// 	var count int
+
+// 	con := db.CreateCon()
+
+// 	sqlStatement := "SELECT id, name, passcode FROM cashier WHERE id= ?, passcode = ?"
+
+// 	rows, err := con.Query(sqlStatement, id, passcode)
+// 	if err != nil {
+// 		return res, err
+// 	}
+// 	defer rows.Close()
+
+// 	// if rows. {
+
+// 	// }
+
+// 	res.Success = true
+// 	res.Message = "Success"
+// 	res.Data = obj
+
+// 	return res, nil
+// }
