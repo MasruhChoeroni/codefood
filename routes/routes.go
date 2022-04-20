@@ -2,17 +2,20 @@ package routes
 
 import (
 	"codefood/controllers"
+	"codefood/db"
 	"codefood/middleware"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
-var validate *validator.Validate
-
 func Init() *echo.Echo {
 	e := echo.New()
+	con := db.CreateCon()
+	con.Query("CREATE TABLE `cashiers` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,`name` varchar(255) NOT NULL DEFAULT '',`passcode` varchar(255) NOT NULL DEFAULT '',`created_at` datetime DEFAULT NULL,`updated_at` datetime DEFAULT NULL,PRIMARY KEY (`id`)) ENGINE=InnoDB;")
+	con.Query("CREATE TABLE `categories` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,`name` varchar(255) NOT NULL DEFAULT '',`created_at` datetime DEFAULT NULL,`updated_at` datetime DEFAULT NULL,PRIMARY KEY (`id`)) ENGINE=InnoDB;")
+	con.Query("CREATE TABLE `payment_types` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,`name` varchar(255) NOT NULL DEFAULT '',`type` varchar(255) NOT NULL DEFAULT '',`logo` varchar(255) NOT NULL DEFAULT '',`created_at` datetime DEFAULT NULL,`updated_at` datetime DEFAULT NULL,PRIMARY KEY (`id`)) ENGINE=InnoDB;")
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Back-end: Point of Sales API")
 	})

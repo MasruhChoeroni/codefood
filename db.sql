@@ -18,8 +18,6 @@
 --
 -- Table structure for table `cashiers`
 --
-CREATE DATABASE codefood;
-USE codefood;
 
 DROP TABLE IF EXISTS `cashiers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
