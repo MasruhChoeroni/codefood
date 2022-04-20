@@ -22,11 +22,11 @@ func LoginCashiers(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.VerifyLogin(conv_id, cashier.Passcode)
+	httpNumber, result, err := models.VerifyLogin(conv_id, cashier.Passcode)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		return c.JSON(httpNumber.Number, map[string]string{"message": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(httpNumber.Number, result)
 }

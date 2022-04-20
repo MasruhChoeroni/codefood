@@ -126,13 +126,11 @@ func StoreCategories(name string) (Response, error) {
 
 	sqlStatement2 := "SELECT * FROM categories WHERE id = ?;"
 	rows, err := con.Query(sqlStatement2, lastInsertedId)
-
-	defer rows.Close()
-
 	if err != nil {
 		return res, err
 	}
 
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&obj.Id, &obj.Name, &obj.CreatedAt, &obj.UpdatedAt)
 		if err != nil {

@@ -134,12 +134,11 @@ func StoreProducts(name string, image string, price int64, stock int64) (Respons
 
 	sqlStatement2 := "SELECT * FROM products WHERE id = ?;"
 	rows, err := con.Query(sqlStatement2, lastInsertedId)
-
-	defer rows.Close()
-
 	if err != nil {
 		return res, err
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		err = rows.Scan(&obj.Id, &obj.Name)
