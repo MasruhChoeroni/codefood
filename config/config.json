@@ -1,7 +1,7 @@
 {
-    "db_username" : "root",
-    "db_password" : "my-secret-pw",
+    "db_username" : "emsoftw1_code",
+    "db_password" : "codefood2022",
     "db_port" : "3306",
-    "db_host" : "codefood-mariadb",
-    "db_name" : "codefood"
+    "db_host" : "145.239.118.128",
+    "db_name" : "emsoftw1_code"
 }

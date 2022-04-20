@@ -29,5 +29,5 @@ WORKDIR /
 
 # `codefood` should be replaced here as well
 COPY --from=build /go/src/codefood .
-
+EXPOSE 3030
 CMD ["./codefood"]
