@@ -62,6 +62,7 @@ func FindPaymentTypesById(c echo.Context) error {
 func StorePaymentTypes(c echo.Context) error {
 	validate := validator.New()
 	paymentTypes := &models.PaymentTypesValidation{}
+	res := &models.Response{}
 
 	err := c.Bind(paymentTypes)
 	if err != nil {
@@ -71,8 +72,13 @@ func StorePaymentTypes(c echo.Context) error {
 	err = validate.Struct(paymentTypes)
 
 	if err != nil {
-		test := models.ResponseValidateError(err)
-		return c.JSON(http.StatusInternalServerError, test)
+		if err != nil {
+			test := models.ResponseValidateError(err)
+			res.Success = false
+			res.Message = test.Error()
+			res.Error = test
+			return c.JSON(http.StatusBadRequest, res)
+		}
 	}
 
 	result, err := models.StorePaymentTypes(paymentTypes.Name, paymentTypes.Type, paymentTypes.Logo)
@@ -88,6 +94,7 @@ func UpdatePaymentTypes(c echo.Context) error {
 	id := c.Param("id")
 	validate := validator.New()
 	paymentTypes := &models.PaymentTypesValidation{}
+	res := &models.Response{}
 
 	err := c.Bind(paymentTypes)
 	if err != nil {
@@ -97,20 +104,23 @@ func UpdatePaymentTypes(c echo.Context) error {
 	err = validate.Struct(paymentTypes)
 	if err != nil {
 		test := models.ResponseValidateError(err)
-		return c.JSON(http.StatusInternalServerError, test)
+		res.Success = false
+		res.Message = test.Error()
+		res.Error = test
+		return c.JSON(400, res)
 	}
 
 	conv_id, err := strconv.Atoi(id) //convert to integer
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(400, err.Error())
 	}
 
-	result, err := models.UpdatePaymentTypes(conv_id, paymentTypes.Name, paymentTypes.Type, paymentTypes.Logo)
+	errNumber, result, err := models.UpdatePaymentTypes(conv_id, paymentTypes.Name, paymentTypes.Type, paymentTypes.Logo)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(errNumber.Number, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(errNumber.Number, result)
 }
 
 func DeletePaymentTypes(c echo.Context) error {
@@ -121,10 +131,10 @@ func DeletePaymentTypes(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	result, err := models.DeletePaymentTypes(conv_id)
+	errNumber, result, err := models.DeletePaymentTypes(conv_id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(errNumber.Number, result)
 }

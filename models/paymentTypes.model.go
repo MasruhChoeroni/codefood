@@ -152,8 +152,9 @@ func StorePaymentTypes(name string, tipe string, logo string) (Response, error) 
 	return res, nil
 }
 
-func UpdatePaymentTypes(id int, name string, tipe string, logo string) (Response, error) {
+func UpdatePaymentTypes(id int, name string, tipe string, logo string) (ErrorNumber, Response, error) {
 	var res Response
+	var errNumber ErrorNumber
 
 	con := db.CreateCon()
 
@@ -161,17 +162,28 @@ func UpdatePaymentTypes(id int, name string, tipe string, logo string) (Response
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	result, err := stmt.Exec(name, tipe, logo, id)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
+	}
+
+	if rowsAffected == 0 {
+		res.Success = false
+		res.Message = "Cashier Not Found"
+
+		errNumber.Number = 404
+		return errNumber, res, nil
 	}
 
 	res.Success = true
@@ -179,12 +191,14 @@ func UpdatePaymentTypes(id int, name string, tipe string, logo string) (Response
 	res.Data = map[string]int64{
 		"rows_affected": rowsAffected,
 	}
+	errNumber.Number = 200
 
-	return res, nil
+	return errNumber, res, nil
 }
 
-func DeletePaymentTypes(id int) (Response, error) {
+func DeletePaymentTypes(id int) (ErrorNumber, Response, error) {
 	var res Response
+	var errNumber ErrorNumber
 
 	con := db.CreateCon()
 
@@ -192,17 +206,28 @@ func DeletePaymentTypes(id int) (Response, error) {
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	result, err := stmt.Exec(id)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
+	}
+
+	if rowsAffected == 0 {
+		res.Success = false
+		res.Message = "Cashier Not Found"
+		res.Data = map[string]string{}
+		errNumber.Number = 404
+		return errNumber, res, nil
 	}
 
 	res.Success = true
@@ -210,6 +235,7 @@ func DeletePaymentTypes(id int) (Response, error) {
 	res.Data = map[string]int64{
 		"rows_affected": rowsAffected,
 	}
+	errNumber.Number = 200
 
-	return res, nil
+	return errNumber, res, nil
 }

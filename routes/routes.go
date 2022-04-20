@@ -3,6 +3,7 @@ package routes
 import (
 	"codefood/controllers"
 	"codefood/db"
+	"codefood/middleware"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -28,7 +29,7 @@ func Init() *echo.Echo {
 
 	e.GET("/cashiers/:id/passcode", controllers.FindCashiersPasscodeById)
 
-	e.GET("/categories", controllers.FindAllCategories)
+	e.GET("/categories", controllers.FindAllCategories, middleware.IsAuthenticated)
 	e.GET("/categories/:id", controllers.FindCategoriesById)
 	e.POST("/categories", controllers.StoreCategories)
 	e.PUT("/categories/:id", controllers.UpdateCategories)

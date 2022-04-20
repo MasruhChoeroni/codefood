@@ -73,6 +73,53 @@ func FindCategoriesAll(limit int, skip int) (Response, error) {
 	return res, nil
 }
 
+func FindCategoriesAll2() (Response, error) {
+	var obj Categories2
+	var arrobj []Categories2
+	var res Response
+	var total int64
+
+	con := db.CreateCon()
+
+	sqlCountStatement := "SELECT COUNT(*) AS total FROM categories"
+
+	row, err := con.Query(sqlCountStatement)
+	if err != nil {
+		return res, err
+	}
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&total)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	sqlStatement := "SELECT id, name FROM categories"
+
+	rows, err := con.Query(sqlStatement)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&obj.Id, &obj.Name)
+		if err != nil {
+			return res, err
+		}
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Success = true
+	res.Message = "Success"
+	res.Data = map[string]interface{}{
+		"categories": arrobj,
+	}
+
+	return res, nil
+}
+
 func FindCategoriesById(id int) (Response, error) {
 	var obj Categories2
 	var res Response
@@ -145,8 +192,9 @@ func StoreCategories(name string) (Response, error) {
 	return res, nil
 }
 
-func UpdateCategories(id int, name string) (Response, error) {
+func UpdateCategories(id int, name string) (ErrorNumber, Response, error) {
 	var res Response
+	var errNumber ErrorNumber
 
 	con := db.CreateCon()
 
@@ -154,17 +202,28 @@ func UpdateCategories(id int, name string) (Response, error) {
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	result, err := stmt.Exec(name, id)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
+	}
+
+	if rowsAffected == 0 {
+		res.Success = false
+		res.Message = "Category Not Found"
+
+		errNumber.Number = 404
+		return errNumber, res, nil
 	}
 
 	res.Success = true
@@ -172,12 +231,14 @@ func UpdateCategories(id int, name string) (Response, error) {
 	res.Data = map[string]int64{
 		"rows_affected": rowsAffected,
 	}
+	errNumber.Number = 200
 
-	return res, nil
+	return errNumber, res, nil
 }
 
-func DeleteCategories(id int) (Response, error) {
+func DeleteCategories(id int) (ErrorNumber, Response, error) {
 	var res Response
+	var errNumber ErrorNumber
 
 	con := db.CreateCon()
 
@@ -185,17 +246,28 @@ func DeleteCategories(id int) (Response, error) {
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	result, err := stmt.Exec(id)
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return res, err
+		errNumber.Number = 500
+		return errNumber, res, err
+	}
+
+	if rowsAffected == 0 {
+		res.Success = false
+		res.Message = "Category Not Found"
+		res.Data = map[string]string{}
+		errNumber.Number = 404
+		return errNumber, res, nil
 	}
 
 	res.Success = true
@@ -203,6 +275,7 @@ func DeleteCategories(id int) (Response, error) {
 	res.Data = map[string]int64{
 		"rows_affected": rowsAffected,
 	}
+	errNumber.Number = 200
 
-	return res, nil
+	return errNumber, res, nil
 }
