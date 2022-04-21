@@ -79,6 +79,53 @@ func FindPaymentTypesAll(limit int, skip int) (Response, error) {
 	return res, nil
 }
 
+func FindPaymentTypesAll2() (Response, error) {
+	var obj PaymentTypes2
+	var arrobj []PaymentTypes2
+	var res Response
+	var total int64
+
+	con := db.CreateCon()
+
+	sqlCountStatement := "SELECT COUNT(*) AS total FROM payment_types"
+
+	row, err := con.Query(sqlCountStatement)
+	if err != nil {
+		return res, err
+	}
+	defer row.Close()
+	for row.Next() {
+		err = row.Scan(&total)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	sqlStatement := "SELECT id, name, type, logo FROM payment_types"
+
+	rows, err := con.Query(sqlStatement)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&obj.Id, &obj.Name, &obj.Type, &obj.Logo)
+		if err != nil {
+			return res, err
+		}
+		arrobj = append(arrobj, obj)
+	}
+
+	res.Success = true
+	res.Message = "Success"
+	res.Data = map[string]interface{}{
+		"payments": arrobj,
+	}
+
+	return res, nil
+}
+
 func FindPaymentTypesById(id int) (Response, error) {
 	var obj PaymentTypes2
 	var res Response

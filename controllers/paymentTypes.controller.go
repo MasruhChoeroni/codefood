@@ -24,23 +24,33 @@ func GetJSONRawBody(c echo.Context) map[string]interface{} {
 func FindAllPaymentTypes(c echo.Context) error {
 	limit := c.QueryParam("limit")
 	skip := c.QueryParam("skip")
+	countError := 0
 
 	conv_limit, err := strconv.Atoi(limit)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		countError = countError + 1
 	}
 	conv_skip, err := strconv.Atoi(skip)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		countError = countError + 1
 	}
 
-	result, err := models.FindPaymentTypesAll(conv_limit, conv_skip)
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+	if countError == 0 {
+		result, err := models.FindPaymentTypesAll(conv_limit, conv_skip)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+		return c.JSON(http.StatusOK, result)
 	}
 
-	return c.JSON(http.StatusOK, result)
+	if countError > 1 {
+		result, err := models.FindPaymentTypesAll2()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"message": err.Error()})
+		}
+		return c.JSON(http.StatusOK, result)
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
 func FindPaymentTypesById(c echo.Context) error {

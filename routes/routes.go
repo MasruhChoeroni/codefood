@@ -35,7 +35,7 @@ func Init() *echo.Echo {
 	e.PUT("/categories/:id", controllers.UpdateCategories)
 	e.DELETE("/categories/:id", controllers.DeleteCategories)
 
-	e.GET("/payments", controllers.FindAllPaymentTypes)
+	e.GET("/payments", controllers.FindAllPaymentTypes, middleware.IsAuthenticated)
 	e.GET("/payments/:id", controllers.FindPaymentTypesById)
 	e.POST("/payments", controllers.StorePaymentTypes)
 	e.PUT("/payments/:id", controllers.UpdatePaymentTypes)
